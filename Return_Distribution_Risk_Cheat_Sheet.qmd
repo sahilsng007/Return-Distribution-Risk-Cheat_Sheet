@@ -1,0 +1,126 @@
+---
+title: "Return Distribution - Risk "
+format: html
+editor: visual
+---
+
+### Understand and interpret **Mean, Standard Deviation, Skewness, and Kurtosis**.
+
+------------------------------------------------------------------------
+
+## **Mean (Average Return)**
+
+Shows the **average daily return**\
+Positive = uptrend; Negative = downtrend
+
+| Range | Interpretation              |
+|-------|-----------------------------|
+| \~0   | flat                        |
+| \> 0  | Average gain (bullish bias) |
+| \< 0  | Average loss (bearish bias) |
+
+------------------------------------------------------------------------
+
+## **Standard Deviation (Volatility)**
+
+Measures how much returns vary daily\
+Higher = more risk (price jumps/sinks)
+
+| Daily Std Dev | Risk Level         |
+|---------------|--------------------|
+| \< 1%         | Low (stable asset) |
+| 1–2%          | Moderate           |
+| \> 2%         | High (tech/crypto) |
+
+------------------------------------------------------------------------
+
+## S**kewness (Tail Direction Risk)**
+
+| Value | Shape      | What It Means                         | Risk Impact       |
+|--------------|--------------|------------------------------|--------------|
+| ≈ 0   | Symmetric  | Normal distribution                   | Neutral           |
+| \> 0  | Right skew | Rare big gains, frequent small losses | Potential upside  |
+| \< 0  | Left skew  | Rare big losses, frequent small gains | Watch for crashes |
+
+> **Worry when:** Skewness \< 0\
+> Suggests hidden downside risk (e.g. market crash potential)
+
+------------------------------------------------------------------------
+
+## **Kurtosis (Tail Size / Shock Risk)**
+
+| Value | What It Means                         | Risk Impact              |
+|-------|---------------------------------------|--------------------------|
+| ≈ 3   | Normal (Gaussian) tails               | Baseline assumption      |
+| \> 3  | **Fat tails** — big jumps more likely | Extreme events likely    |
+| \< 3  | **Thin tails** — rare extreme returns | Safer, but may miss risk |
+
+> **Worry when:**\
+> - Kurtosis \> 10 → **extreme volatility or jumps likely**\
+> - Especially dangerous **if paired with negative skewness**
+
+------------------------------------------------------------------------
+
+## Tips:
+
+-   Always interpret **mean + std dev + skew + kurtosis together**
+-   High kurtosis + negative skew = **“sneaky risky” asset**
+-   If kurtosis is high → **use GARCH, VaR, ES, or stress tests**
+-   Plot a **histogram** or **QQ plot** to visualize outliers
+
+------------------------------------------------------------------------
+
+### Reusable R function to describe a distribution
+
+```{r}
+
+describe_distribution <- function(x) {
+  library(moments)
+  cat("Mean:", mean(x, na.rm = TRUE), "\n")
+  cat("Std Dev:", sd(x, na.rm = TRUE), "\n")
+  cat("Skewness:", skewness(x, na.rm = TRUE), "\n")
+  cat("Kurtosis:", kurtosis(x, na.rm = TRUE), "\n")
+
+  skew <- skewness(x, na.rm = TRUE)
+  kurt <- kurtosis(x, na.rm = TRUE)
+
+  if (skew < 0) cat("Warning: Left skewed (risk of large negative returns)\n")
+  if (kurt > 3) cat("Warning: Fat tails detected — extreme events more likely\n")
+  if (kurt < 3) cat("️ Thin tails — extreme returns less likely\n")
+}
+
+```
+
+Use it like this:
+
+```{r}
+describe_distribution(GLEN_returns$log_returns)
+```
+
+```         
+```
+
+``` r
+```
+
+### Instruction:
+
+Use your own data set and map paths with:
+
+#package::data set
+
+#load(data set)
+
+#read.csv()
+
+#readxl()
+
+I used file named GLEN, so easy to replace that with your own file.
+
+Better calculate log returns and then input into moments of financial time series
+
+GLEN %\>% mutate( simple_returns = (Price - lag(Price))/lag(Price),
+
+log_returns = log(Price/lag(Price)) )
+
+for GARCH, see my other models on GITHUB (<https://github.com/sahilsng007>)
